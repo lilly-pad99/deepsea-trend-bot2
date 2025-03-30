@@ -1,0 +1,5 @@
+flask
+apscheduler
+snscrape
+gspread
+oauth2client
