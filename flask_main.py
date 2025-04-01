@@ -17,7 +17,7 @@ EMAIL_RECEIVER = os.getenv("EMAIL_RECEIVER")
 SHEET_NAME = os.getenv("GOOGLE_SHEET_NAME")
 CREDENTIAL_FILE = "credentials.json"
 
-keywords = ["trump", "Donald turmp"]
+keywords = ["trump", "Donald Trump"]
 
 def scrape_twitter(keyword, limit=3):
     results = []
@@ -82,6 +82,12 @@ scheduler.start()
 @app.route("/")
 def home():
     return "DeepSea Flask Bot is running!"
+
+# 수동 실행 라우트
+@app.route("/run-now")
+def manual_run():
+    run_trend_task()
+    return "✅ 수동 실행 완료!"
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)
