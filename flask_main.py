@@ -17,7 +17,7 @@ EMAIL_RECEIVER = os.getenv("EMAIL_RECEIVER")
 SHEET_NAME = os.getenv("GOOGLE_SHEET_NAME")
 CREDENTIAL_FILE = "credentials.json"
 
-keywords = ["deep sea creature", "rare jellyfish", "심해생물", "해양생물", "정체불명 해파리"]
+keywords = ["trump", "Donald turmp"]
 
 def scrape_twitter(keyword, limit=3):
     results = []
