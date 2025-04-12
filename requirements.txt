@@ -1,5 +1,5 @@
 flask
 apscheduler
-snscrape
+tweepy
 gspread
 oauth2client
