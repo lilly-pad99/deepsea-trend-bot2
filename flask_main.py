@@ -3,10 +3,10 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
 import smtplib
 from email.mime.text import MIMEText
-import snscrape.modules.twitter as sntwitter
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import os
+import tweepy
 
 app = Flask(__name__)
 
@@ -17,20 +17,29 @@ EMAIL_RECEIVER = os.getenv("EMAIL_RECEIVER")
 SHEET_NAME = os.getenv("GOOGLE_SHEET_NAME")
 CREDENTIAL_FILE = "credentials.json"
 
-keywords = ["trump", "Donald Trump"]
+TWITTER_API_KEY = os.getenv("TWITTER_API_KEY")
+TWITTER_API_SECRET = os.getenv("TWITTER_API_SECRET")
+TWITTER_ACCESS_TOKEN = os.getenv("TWITTER_ACCESS_TOKEN")
+TWITTER_ACCESS_SECRET = os.getenv("TWITTER_ACCESS_SECRET")
+
+keywords = ["deep sea creature", "rare jellyfish", "심해생물", "해양생물", "정체불명 해파리"]
+
+# 트위터 인증
+auth = tweepy.OAuth1UserHandler(
+    TWITTER_API_KEY, TWITTER_API_SECRET,
+    TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_SECRET
+)
+api = tweepy.API(auth)
 
 def scrape_twitter(keyword, limit=3):
     results = []
-    query = f"{keyword} lang:en OR lang:ko"
-    for i, tweet in enumerate(sntwitter.TwitterSearchScraper(query).get_items()):
-        if i >= limit:
-            break
+    for tweet in tweepy.Cursor(api.search_tweets, q=keyword, lang="en", tweet_mode="extended").items(limit):
         results.append({
             "platform": "Twitter",
             "keyword": keyword,
-            "date": tweet.date.strftime("%Y-%m-%d %H:%M"),
-            "content": tweet.content,
-            "url": tweet.url
+            "date": tweet.created_at.strftime("%Y-%m-%d %H:%M"),
+            "content": tweet.full_text,
+            "url": f"https://twitter.com/user/status/{tweet.id}"
         })
     return results
 
@@ -81,7 +90,7 @@ scheduler.start()
 # --------- 웹 루트 ---------
 @app.route("/")
 def home():
-    return "DeepSea Flask Bot is running!"
+    return "DeepSea Flask Bot (Tweepy version) is running!"
 
 # 수동 실행 라우트
 @app.route("/run-now")
